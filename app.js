@@ -1,0 +1,1353 @@
+const { useState, useEffect, useRef } = React;
+
+// --- High-fidelity SVG Icon Components ---
+const IconShield = () => (
+  <svg className="w-6 h-6 text-cyber-glow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+  </svg>
+);
+
+const IconUpload = () => (
+  <svg className="w-12 h-12 text-gray-400 group-hover:text-cyber-glow transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+  </svg>
+);
+
+const IconEye = () => (
+  <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+  </svg>
+);
+
+const IconDownload = () => (
+  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+  </svg>
+);
+
+const IconSparkles = () => (
+  <svg className="w-5 h-5 text-cyber-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+  </svg>
+);
+
+const IconAlert = () => (
+  <svg className="w-5 h-5 text-cyber-rose" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+  </svg>
+);
+
+const IconCheck = () => (
+  <svg className="w-5 h-5 text-cyber-emerald" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const IconSearch = () => (
+  <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  </svg>
+);
+
+const IconCopy = () => (
+  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+  </svg>
+);
+
+// --- Vector Face Placeholder Generator ---
+const getFaceSvgDataUrl = (type) => {
+  let faceLines = '';
+  let accentColor = '#00f0ff';
+  
+  if (type === 'authentic') {
+    accentColor = '#00f5d4';
+    faceLines = `
+      <path d="M70,120 Q100,150 130,120" stroke="${accentColor}" stroke-width="2" fill="none"/>
+      <circle cx="80" cy="80" r="5" fill="${accentColor}"/>
+      <circle cx="120" cy="80" r="5" fill="${accentColor}"/>
+      <path d="M100,75 L100,98 L90,98" stroke="${accentColor}" stroke-width="2" fill="none"/>
+      <path d="M60,40 C60,40 100,20 140,40 C140,40 150,110 130,140 C110,170 90,170 70,140 C50,110 60,40 60,40 Z" stroke="${accentColor}" stroke-width="1.5" fill="none" stroke-dasharray="3,3"/>
+      <path d="M50,90 H150 M100,30 V170" stroke="${accentColor}" stroke-width="0.5" opacity="0.4"/>
+    `;
+  } else if (type === 'deepfake') {
+    accentColor = '#ff3366';
+    faceLines = `
+      <path d="M65,123 Q98,145 125,128" stroke="${accentColor}" stroke-width="2.5" fill="none"/>
+      <path d="M75,117 Q100,135 135,118" stroke="#9d4edd" stroke-width="1" fill="none" opacity="0.8"/>
+      <circle cx="78" cy="82" r="7" stroke="${accentColor}" stroke-width="1" fill="none"/>
+      <circle cx="80" cy="80" r="2" fill="${accentColor}"/>
+      <circle cx="120" cy="78" r="8" stroke="#9d4edd" stroke-width="1" stroke-dasharray="2,2" fill="none"/>
+      <rect x="116" y="74" width="8" height="8" stroke="${accentColor}" stroke-width="1.5" fill="none"/>
+      <path d="M60,40 C60,40 100,20 140,40 C140,40 150,110 130,140" stroke="${accentColor}" stroke-width="1.5" fill="none"/>
+      <path d="M70,140 C50,110 60,40 60,40" stroke="#9d4edd" stroke-width="2" fill="none"/>
+      <line x1="125" y1="35" x2="145" y2="55" stroke="${accentColor}" stroke-width="2"/>
+      <line x1="145" y1="35" x2="125" y2="55" stroke="${accentColor}" stroke-width="2"/>
+    `;
+  } else {
+    accentColor = '#ff9f1c';
+    faceLines = `
+      <path d="M75,120 Q100,135 125,120" stroke="${accentColor}" stroke-width="2" fill="none"/>
+      <circle cx="80" cy="80" r="5" fill="${accentColor}"/>
+      <circle cx="120" cy="80" r="5" fill="${accentColor}"/>
+      <rect x="110" y="70" width="20" height="20" stroke="#ff3366" stroke-width="1" stroke-dasharray="2,2" fill="none"/>
+      <path d="M100,75 L100,100" stroke="${accentColor}" stroke-width="2"/>
+      <path d="M60,40 C60,40 100,20 140,40 C140,40 150,110 130,140 C110,170 90,170 70,140 C50,110 60,40 60,40 Z" stroke="${accentColor}" stroke-width="1.5" fill="none"/>
+      <circle cx="120" cy="80" r="15" stroke="#ff3366" stroke-width="1.5" fill="none"/>
+    `;
+  }
+
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+      <rect width="200" height="200" fill="#0b0f19"/>
+      <path d="M20,0 V200 M40,0 V200 M60,0 V200 M80,0 V200 M100,0 V200 M120,0 V200 M140,0 V200 M160,0 V200 M180,0 V200" stroke="rgba(0, 240, 255, 0.05)" stroke-width="0.5"/>
+      <path d="M0,20 H200 M0,40 H200 M0,60 H200 M0,80 H200 M0,100 H200 M0,120 H200 M0,140 H200 M0,160 H200 M0,180 H200" stroke="rgba(0, 240, 255, 0.05)" stroke-width="0.5"/>
+      <path d="M10,20 L10,10 L20,10 M180,10 L190,10 L190,20 M190,180 L190,190 L180,190 M20,190 L10,190 L10,180" stroke="${accentColor}" stroke-width="1" fill="none"/>
+      ${faceLines}
+    </svg>
+  `;
+
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+};
+
+// --- Mock Sample Images Objects ---
+const SAMPLES = [
+  {
+    id: 'sample-authentic',
+    name: 'Sarah_Connor_Headshot.jpg',
+    type: 'authentic',
+    title: 'Authentic Portrait',
+    subtitle: 'Standard Camera Capture',
+    src: getFaceSvgDataUrl('authentic'),
+    result: {
+      probability: 6,
+      riskLevel: 'Clear',
+      faceStatus: '1 Face Detected (Mesh Validated)',
+      fingerprint: 'HS-8821-C8A9',
+      evidence: [
+        { id: 1, name: 'GAN Structural Signatures', status: 'Passed', detail: 'No generative networks detected' },
+        { id: 2, name: 'Facial Landmark Symmetry', status: 'Passed', detail: 'Coordinates aligned with camera sensor model' },
+        { id: 3, name: 'EXIF Metadata Analysis', status: 'Passed', detail: 'Camera Model: Sony ILCE-7M4, Original Date preserved' },
+        { id: 4, name: 'Pixel Compression Discrepancies', status: 'Passed', detail: 'Uniform JPEG quantization grids' }
+      ]
+    }
+  },
+  {
+    id: 'sample-deepfake',
+    name: 'John_Doe_Avatar.jpg',
+    type: 'deepfake',
+    title: 'Deepfake Portrait',
+    subtitle: 'AI Synthesis (StyleGAN/Midjourney)',
+    src: getFaceSvgDataUrl('deepfake'),
+    result: {
+      probability: 94,
+      riskLevel: 'Critical',
+      faceStatus: '1 Face Detected (Inconsistent Landmarks)',
+      fingerprint: 'HS-1092-D84F',
+      evidence: [
+        { id: 1, name: 'GAN Structural Signatures', status: 'Failed', detail: 'High correlation with StyleGAN2 blending signatures (94.2%)' },
+        { id: 2, name: 'Facial Landmark Symmetry', status: 'Failed', detail: 'Asymmetry detected in pupil reflection & outer eye border pixels' },
+        { id: 3, name: 'EXIF Metadata Analysis', status: 'Failed', detail: 'EXIF header stripped. File generated using software suite' },
+        { id: 4, name: 'Pixel Compression Discrepancies', status: 'Failed', detail: 'Localized noise boundaries near face-neck seam' }
+      ]
+    }
+  },
+  {
+    id: 'sample-manipulated',
+    name: 'Jane_Smith_Credential.jpg',
+    type: 'manipulated',
+    title: 'Manipulated Badge',
+    subtitle: 'Face Swap / Spliced Layer Edit',
+    src: getFaceSvgDataUrl('manipulated'),
+    result: {
+      probability: 65,
+      riskLevel: 'High',
+      faceStatus: 'Face Splice Detected (Border anomalies)',
+      fingerprint: 'HS-4481-A90E',
+      evidence: [
+        { id: 1, name: 'GAN Structural Signatures', status: 'Passed', detail: 'No direct model signatures' },
+        { id: 2, name: 'Facial Landmark Symmetry', status: 'Failed', detail: 'Splicing boundary detected around facial contour border' },
+        { id: 3, name: 'EXIF Metadata Analysis', status: 'Failed', detail: 'Timestamp mismatch between file header and EXIF creation tags' },
+        { id: 4, name: 'Pixel Compression Discrepancies', status: 'Failed', detail: 'Local double JPEG compression signature detected (Face region vs Background)' }
+      ]
+    }
+  }
+];
+
+// --- Main App Component ---
+function App() {
+  const [currentView, setCurrentView] = useState('landing');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [scanLogs, setScanLogs] = useState([]);
+  const [analysisResult, setAnalysisResult] = useState(null);
+  const [cases, setCases] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  
+  // Initialize with mock reported cases
+  useEffect(() => {
+    const initialCases = [
+      {
+        id: 'HS-9482-DL',
+        name: 'LinkedIn Executive Portrait Clone',
+        platform: 'LinkedIn',
+        date: '2026-06-12',
+        riskScore: 96,
+        riskLevel: 'Critical',
+        status: 'Takedown Requested',
+        summary: 'GAN boundary anomalies. Account impersonating CFO flagged and scanned.'
+      },
+      {
+        id: 'HS-8291-SP',
+        name: 'Cloned ID Badge Presentation',
+        platform: 'Fintech Portal',
+        date: '2026-06-15',
+        riskScore: 84,
+        riskLevel: 'High',
+        status: 'Under Review',
+        summary: 'Localized double compression and face splice mismatch on verification scan.'
+      },
+      {
+        id: 'HS-3829-ID',
+        name: 'Corporate Directory Impersonator',
+        platform: 'Slack / Internal Security',
+        date: '2026-06-16',
+        riskScore: 72,
+        riskLevel: 'High',
+        status: 'Case Registered',
+        summary: 'Stable Diffusion-generated avatar mapped to inactive user ID.'
+      },
+      {
+        id: 'HS-1083-OK',
+        name: 'Verified Board Member Scan',
+        platform: 'Investor Portal',
+        date: '2026-06-17',
+        riskScore: 4,
+        riskLevel: 'Clear',
+        status: 'Resolved',
+        summary: 'Authentic camera EXIF sensor matches. Checked positive for physical capture.'
+      }
+    ];
+    setCases(initialCases);
+  }, []);
+
+  const triggerScan = (imageData) => {
+    setSelectedImage(imageData);
+    setIsAnalyzing(true);
+    setScanLogs([]);
+    
+    const logs = [
+      'Initializing HerShield core scan engine...',
+      'Locating face coordinates and landmark vectors...',
+      'Analyzing pixel noise density and JPEG block structures...',
+      'Evaluating EXIF metadata headers and camera signatures...',
+      'Checking neural network activation anomalies...',
+      'Finalizing deepfake probability calculations...'
+    ];
+    
+    logs.forEach((log, index) => {
+      setTimeout(() => {
+        setScanLogs(prev => [...prev, `[INFO] ${log}`]);
+        if (index === logs.length - 1) {
+          setTimeout(() => {
+            setIsAnalyzing(false);
+            if (imageData.result) {
+              setAnalysisResult(imageData.result);
+            } else {
+              const prob = Math.floor(Math.random() * 85) + 15;
+              let level = 'Low';
+              if (prob > 75) level = 'Critical';
+              else if (prob > 50) level = 'High';
+              else if (prob > 20) level = 'Medium';
+
+              setAnalysisResult({
+                probability: prob,
+                riskLevel: level,
+                faceStatus: '1 Face Detected (Validated)',
+                fingerprint: `HS-${Math.floor(1000 + Math.random() * 9000)}-${['A','B','C','D'][Math.floor(Math.random() * 4)]}${Math.floor(10 + Math.random() * 89)}`,
+                evidence: [
+                  { id: 1, name: 'GAN Structural Signatures', status: prob > 70 ? 'Failed' : 'Passed', detail: prob > 70 ? 'Generative network features matches' : 'No synthetic model match found' },
+                  { id: 2, name: 'Facial Landmark Symmetry', status: prob > 50 ? 'Failed' : 'Passed', detail: prob > 50 ? 'Slight alignment offsets in eye area' : 'Normal structure observed' },
+                  { id: 3, name: 'EXIF Metadata Analysis', status: 'Failed', detail: 'EXIF tags stripped or unreadable.' },
+                  { id: 4, name: 'Pixel Compression Discrepancies', status: prob > 40 ? 'Failed' : 'Passed', detail: prob > 40 ? 'Local double-compression detected' : 'Standard uniform pixel distribution' }
+                ]
+              });
+            }
+            setCurrentView('results');
+          }, 600);
+        }
+      }, (index + 1) * 700);
+    });
+  };
+
+  const handleAddReport = (reportedCase) => {
+    setCases(prev => [reportedCase, ...prev]);
+    setCurrentView('dashboard');
+  };
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      {/* Header */}
+      <header className="sticky top-0 z-50 glass-panel bg-cyber-bg bg-opacity-80 border-b border-cyber-border py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-cyber-glow to-cyber-purple p-0.5 flex items-center justify-center shadow-glow-cyan animate-pulse-slow">
+              <div className="w-full h-full bg-cyber-bg rounded-[7px] flex items-center justify-center">
+                <IconShield />
+              </div>
+            </div>
+            <div>
+              <h1 className="font-mono text-xl font-bold tracking-wider text-white">HER<span className="text-cyber-glow">SHIELD</span></h1>
+              <p className="text-[10px] text-cyber-purple tracking-widest uppercase font-mono">Cognitive Integrity AI</p>
+            </div>
+          </div>
+          
+          <nav className="hidden md:flex items-center gap-8 text-sm font-mono tracking-wide">
+            <button 
+              onClick={() => setCurrentView('landing')} 
+              className={`hover:text-cyber-glow transition ${currentView === 'landing' ? 'text-cyber-glow' : 'text-gray-400'}`}>
+              HOME
+            </button>
+            <button 
+              onClick={() => { setSelectedImage(null); setAnalysisResult(null); setCurrentView('upload'); }} 
+              className={`hover:text-cyber-glow transition ${currentView === 'upload' || currentView === 'results' ? 'text-cyber-glow' : 'text-gray-400'}`}>
+              SHIELD SCANNER
+            </button>
+            <button 
+              onClick={() => setCurrentView('dashboard')} 
+              className={`hover:text-cyber-glow transition ${currentView === 'dashboard' ? 'text-cyber-glow' : 'text-gray-400'}`}>
+              DASHBOARD
+            </button>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <span className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-cyber-emerald/10 text-cyber-emerald border border-cyber-emerald/20">
+              <span className="w-2 h-2 rounded-full bg-cyber-emerald animate-pulse"></span>
+              SHIELD ACTIVE
+            </span>
+            <button 
+              onClick={() => { setSelectedImage(null); setAnalysisResult(null); setCurrentView('upload'); }}
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyber-glow to-cyber-purple text-black font-semibold text-sm hover:opacity-90 transition duration-300 shadow-glow-cyan font-mono">
+              SECURE IMAGE
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Area */}
+      <main className="flex-grow z-10">
+        {currentView === 'landing' && <LandingPage onStart={() => setCurrentView('upload')} />}
+        {currentView === 'upload' && (
+          <UploadPage 
+            onUpload={triggerScan} 
+            isAnalyzing={isAnalyzing} 
+            logs={scanLogs} 
+            selectedImage={selectedImage}
+          />
+        )}
+        {currentView === 'results' && (
+          <ResultsPage 
+            image={selectedImage} 
+            result={analysisResult} 
+            onNewScan={() => { setSelectedImage(null); setAnalysisResult(null); setCurrentView('upload'); }}
+            onReport={handleAddReport}
+          />
+        )}
+        {currentView === 'dashboard' && (
+          <DashboardPage 
+            cases={cases}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+          />
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-cyber-border py-8 mt-12 bg-cyber-bg bg-opacity-95 font-mono text-xs text-gray-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div>
+            <p>© 2026 HerShield AI. Safeguarding Identity in the Generative Era.</p>
+          </div>
+          <div className="flex gap-6">
+            <a href="#" className="hover:text-cyber-glow transition">TERMS</a>
+            <a href="#" className="hover:text-cyber-glow transition">PRIVACY</a>
+            <a href="#" className="hover:text-cyber-glow transition">DMCA COMPLIANCE</a>
+            <a href="#" className="hover:text-cyber-glow transition">SECURE API</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+// --- LANDING PAGE VIEW ---
+function LandingPage({ onStart }) {
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      {/* Hero Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-20">
+        <div className="lg:col-span-7 space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono bg-cyber-purple/10 text-cyber-purple border border-cyber-purple/20">
+            <IconSparkles />
+            CYBER-DEFENSE FOR DIGITAL IDENTITY
+          </div>
+          
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight font-mono">
+            Protect Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyber-glow via-cyber-purple to-cyber-rose">Digital Identity</span> Against Deepfakes
+          </h2>
+          
+          <p className="text-gray-400 text-lg max-w-2xl leading-relaxed">
+            HerShield AI detects generative image manipulation, strips invasive tracking metadata, and embeds invisible digital watermarks. Neutralize AI-generated abuse and secure your photos before they leave your device.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <button 
+              onClick={onStart}
+              className="px-8 py-4 rounded-xl bg-gradient-to-r from-cyber-glow to-cyber-purple text-black font-bold text-lg hover:opacity-90 transition duration-300 shadow-glow-cyan font-mono flex items-center justify-center gap-2">
+              <IconShield />
+              LAUNCH SCANNER
+            </button>
+            <a 
+              href="#how-it-works"
+              className="px-8 py-4 rounded-xl glass-panel text-white font-semibold text-lg hover:bg-white/5 transition duration-300 font-mono text-center flex items-center justify-center">
+              HOW IT WORKS
+            </a>
+          </div>
+
+          {/* Stat Counters */}
+          <div className="grid grid-cols-3 gap-6 pt-10 border-t border-cyber-border font-mono">
+            <div>
+              <h4 className="text-2xl sm:text-3xl font-bold text-cyber-glow">99.8%</h4>
+              <p className="text-xs text-gray-500 mt-1 uppercase">Detection Accuracy</p>
+            </div>
+            <div>
+              <h4 className="text-2xl sm:text-3xl font-bold text-cyber-purple">4.2M+</h4>
+              <p className="text-xs text-gray-500 mt-1 uppercase">Images Protected</p>
+            </div>
+            <div>
+              <h4 className="text-2xl sm:text-3xl font-bold text-cyber-emerald">&lt;1.8s</h4>
+              <p className="text-xs text-gray-500 mt-1 uppercase">Analysis Speed</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Glowing Hero Interactive Badge */}
+        <div className="lg:col-span-5 flex justify-center">
+          <div className="relative w-80 h-80 sm:w-96 sm:h-96 flex items-center justify-center">
+            <div className="absolute inset-0 bg-gradient-to-tr from-cyber-glow/20 to-cyber-purple/20 rounded-full blur-2xl animate-pulse-slow"></div>
+            
+            <div className="absolute inset-0 border border-dashed border-cyber-glow/40 rounded-full animate-[spin_40s_linear_infinite]"></div>
+            <div className="absolute inset-6 border border-cyber-purple/30 rounded-full animate-[spin_20s_linear_infinite_reverse]"></div>
+            
+            <div className="w-56 h-56 rounded-3xl glass-panel bg-cyber-card bg-opacity-80 flex flex-col items-center justify-center border border-cyber-border shadow-glow-cyan">
+              <div className="w-20 h-20 rounded-2xl bg-cyber-glow/10 flex items-center justify-center mb-4 text-cyber-glow shadow-glow-cyan">
+                <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-.778.099-1.533.284-2.253" />
+                </svg>
+              </div>
+              <h3 className="font-mono text-lg font-bold text-white tracking-widest">SHIELD CORE</h3>
+              <div className="mt-2 text-xs text-cyber-emerald flex items-center gap-1.5 font-mono">
+                <span className="w-1.5 h-1.5 bg-cyber-emerald rounded-full animate-ping"></span>
+                MONITORING THREATS
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Features Grid */}
+      <div className="py-20 border-t border-cyber-border">
+        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+          <h3 className="text-3xl font-bold font-mono text-white">Full-Spectrum Likeness Defense</h3>
+          <p className="text-gray-400">
+            HerShield deploy state-of-the-art cryptographic watermarking and spatial anomaly checkers to safeguard your visuals on the modern web.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="glass-panel bg-cyber-card bg-opacity-40 p-8 rounded-2xl border border-cyber-border hover:border-cyber-glow transition-all duration-300 group hover:shadow-glow-cyan">
+            <div className="w-12 h-12 rounded-xl bg-cyber-glow/10 flex items-center justify-center mb-6 text-cyber-glow">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+              </svg>
+            </div>
+            <h4 className="text-xl font-bold text-white mb-3 font-mono">Deepfake Forensics</h4>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Our advanced convolutional neural network (CNN) flags micro-anomalies, face contours misalignment, and artificial texture patterns characteristic of StyleGAN and diffusion networks.
+            </p>
+          </div>
+
+          <div className="glass-panel bg-cyber-card bg-opacity-40 p-8 rounded-2xl border border-cyber-border hover:border-cyber-purple transition-all duration-300 group hover:shadow-glow-purple">
+            <div className="w-12 h-12 rounded-xl bg-cyber-purple/10 flex items-center justify-center mb-6 text-cyber-purple">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+            </div>
+            <h4 className="text-xl font-bold text-white mb-3 font-mono">Metadata Scrubbing</h4>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Strip camera serials, precise GPS locations, timestamps, and device details that are automatically attached to your pictures. Mitigate stalker vector exposures instantly.
+            </p>
+          </div>
+
+          <div className="glass-panel bg-cyber-card bg-opacity-40 p-8 rounded-2xl border border-cyber-border hover:border-cyber-rose transition-all duration-300 group hover:shadow-glow-rose">
+            <div className="w-12 h-12 rounded-xl bg-cyber-rose/10 flex items-center justify-center mb-6 text-cyber-rose">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 009 11.5c0-.733.033-1.46.1-2.18M11.5 5.512l-.053.078A8.954 8.954 0 0110 5.23m4-1.786a8.954 8.954 0 00-3.457-.253M14.99 8.5c0-.13-.01-.26-.03-.39m0 0a15.6 15.6 0 011.87-5.962m3.06 11.881A15.6 15.6 0 0112 19.5" />
+              </svg>
+            </div>
+            <h4 className="text-xl font-bold text-white mb-3 font-mono">Active Watermarking</h4>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Apply a high-tech invisible noise pattern using visual cryptography. If bad actors try to feed your image to deepfake model engines, the watermark corrupts the model mapping result.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* How It Works Section */}
+      <div id="how-it-works" className="py-20 border-t border-cyber-border">
+        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+          <h3 className="text-3xl font-bold font-mono text-white">Security Protocol Workflow</h3>
+          <p className="text-gray-400">
+            Deploying image immunity requires three simple, localized steps.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-cyber-glow via-cyber-purple to-cyber-rose -translate-y-1/2 z-0 hidden md:block opacity-20"></div>
+
+          <div className="relative z-10 flex flex-col items-center text-center space-y-4 bg-cyber-bg p-6 rounded-2xl border border-cyber-border/40">
+            <div className="w-12 h-12 rounded-full bg-cyber-bg border-2 border-cyber-glow text-cyber-glow flex items-center justify-center font-mono font-bold text-lg shadow-glow-cyan">
+              01
+            </div>
+            <h4 className="text-xl font-bold text-white font-mono">Drop & Inspect</h4>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Upload your photo in the sandbox dashboard. Our neural net checks alignment and deepfake probabilities locally.
+            </p>
+          </div>
+
+          <div className="relative z-10 flex flex-col items-center text-center space-y-4 bg-cyber-bg p-6 rounded-2xl border border-cyber-border/40">
+            <div className="w-12 h-12 rounded-full bg-cyber-bg border-2 border-cyber-purple text-cyber-purple flex items-center justify-center font-mono font-bold text-lg shadow-glow-purple">
+              02
+            </div>
+            <h4 className="text-xl font-bold text-white font-mono">Scrub & Inject</h4>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Confirm stripping of device model and camera telemetry, while overlaying anti-manipulation pixels.
+            </p>
+          </div>
+
+          <div className="relative z-10 flex flex-col items-center text-center space-y-4 bg-cyber-bg p-6 rounded-2xl border border-cyber-border/40">
+            <div className="w-12 h-12 rounded-full bg-cyber-bg border-2 border-cyber-rose text-cyber-rose flex items-center justify-center font-mono font-bold text-lg shadow-glow-rose">
+              03
+            </div>
+            <h4 className="text-xl font-bold text-white font-mono">Shield Registered</h4>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Download the sanitized file. Register its unique SHA-256 fingerprint in the case dashboard for web-wide tracking.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- UPLOAD & ANALYSIS VIEW ---
+function UploadPage({ onUpload, isAnalyzing, logs, selectedImage }) {
+  const [dragActive, setDragActive] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [localFile, setLocalFile] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      setLocalFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setLocalFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleScanClick = () => {
+    if (localFile) {
+      onUpload({
+        name: localFile.name,
+        src: previewUrl,
+      });
+    }
+  };
+
+  const handleSampleClick = (sample) => {
+    onUpload(sample);
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-12">
+      {isAnalyzing ? (
+        <div className="glass-panel bg-cyber-card p-8 rounded-2xl border border-cyber-border flex flex-col items-center space-y-8 shadow-glow-cyan">
+          <h3 className="text-2xl font-bold font-mono text-white tracking-widest flex items-center gap-3">
+            <span className="w-3 h-3 bg-cyber-glow rounded-full animate-ping"></span>
+            RUNNING DEEPFORENSIC NEURAL NET
+          </h3>
+          
+          <div className="relative w-64 h-64 border border-cyber-glow/30 rounded-xl overflow-hidden shadow-glow-cyan bg-black">
+            <img 
+              src={selectedImage?.src || previewUrl} 
+              className="w-full h-full object-contain opacity-80"
+              alt="Scanning Target"
+            />
+            <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyber-glow to-transparent shadow-glow-cyan scanner-line"></div>
+          </div>
+
+          <div className="w-full max-w-xl h-48 bg-black/80 rounded-lg p-4 font-mono text-xs overflow-y-auto border border-cyber-border space-y-1.5 no-scrollbar">
+            {logs.map((log, idx) => (
+              <p key={idx} className={log.includes('Failed') ? 'text-cyber-rose' : log.includes('Passed') ? 'text-cyber-emerald' : 'text-cyber-glow'}>
+                {log}
+              </p>
+            ))}
+            <div className="w-2 h-4 bg-cyber-glow inline-block animate-pulse ml-1"></div>
+          </div>
+
+          <div className="w-full max-w-xl bg-gray-900 rounded-full h-2.5 overflow-hidden">
+            <div className="bg-gradient-to-r from-cyber-glow to-cyber-purple h-2.5 transition-all duration-700" style={{ width: `${(logs.length / 6) * 100}%` }}></div>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-12">
+          <div className="text-center space-y-4">
+            <h3 className="text-3xl font-bold font-mono text-white">Shield Verification Portal</h3>
+            <p className="text-gray-400">
+              Select a preloaded testing sample or upload a custom image file to deploy neural net inspection.
+            </p>
+          </div>
+
+          <div 
+            onDragEnter={handleDrag}
+            onDragOver={handleDrag}
+            onDragLeave={handleDrag}
+            onDrop={handleDrop}
+            className={`relative glass-panel bg-cyber-card bg-opacity-40 p-12 rounded-2xl border border-dashed transition-all duration-300 flex flex-col items-center text-center cursor-pointer group ${
+              dragActive ? 'border-cyber-glow bg-cyber-glow/5 shadow-glow-cyan' : 'border-cyber-border hover:border-cyber-purple'
+            }`}
+            onClick={() => fileInputRef.current.click()}
+          >
+            <input 
+              type="file" 
+              ref={fileInputRef}
+              className="hidden" 
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+            
+            {previewUrl ? (
+              <div className="space-y-6" onClick={(e) => e.stopPropagation()}>
+                <div className="relative w-48 h-48 border border-cyber-border rounded-xl overflow-hidden mx-auto bg-black">
+                  <img src={previewUrl} className="w-full h-full object-contain" alt="Upload preview" />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm font-mono text-white">{localFile?.name}</p>
+                  <p className="text-xs text-gray-500">{(localFile?.size / 1024).toFixed(1)} KB</p>
+                </div>
+                <div className="flex gap-4 justify-center">
+                  <button 
+                    onClick={() => fileInputRef.current.click()}
+                    className="px-4 py-2 border border-cyber-border rounded-lg text-xs font-mono text-gray-400 hover:text-white hover:border-white transition">
+                    CHANGE IMAGE
+                  </button>
+                  <button 
+                    onClick={handleScanClick}
+                    className="px-6 py-2 rounded-lg bg-cyber-glow text-black font-bold text-xs font-mono shadow-glow-cyan hover:opacity-90 transition">
+                    ANALYZE NOW
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="mx-auto flex justify-center">
+                  <IconUpload />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-lg font-semibold text-white font-mono">
+                    Drag and drop your image, or <span className="text-cyber-glow">browse</span>
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Supports PNG, JPG, JPEG, WebP (Max 8MB)
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Sample Images Section */}
+          <div className="space-y-6">
+            <h4 className="text-xl font-bold font-mono text-white text-center">Select Preloaded Anomaly Samples</h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {SAMPLES.map((sample) => (
+                <div 
+                  key={sample.id}
+                  onClick={() => handleSampleClick(sample)}
+                  className="glass-panel bg-cyber-card bg-opacity-30 p-4 rounded-xl border border-cyber-border hover:border-cyber-glow transition-all duration-300 cursor-pointer group flex flex-col justify-between"
+                >
+                  <div className="relative aspect-square w-full rounded-lg overflow-hidden mb-4 border border-cyber-border bg-black">
+                    <img src={sample.src} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt={sample.title} />
+                    <div className="absolute top-2 right-2 px-2.5 py-0.5 rounded text-[10px] font-mono tracking-widest font-bold bg-black/70 text-cyber-glow border border-cyber-glow/30">
+                      PRESET
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <h5 className="font-mono text-sm font-bold text-white group-hover:text-cyber-glow transition">{sample.title}</h5>
+                    <p className="text-xs text-gray-500">{sample.subtitle}</p>
+                  </div>
+                  <button className="mt-4 w-full py-2 bg-cyber-bg border border-cyber-border group-hover:border-cyber-glow group-hover:bg-cyber-glow/5 text-xs font-mono text-gray-400 group-hover:text-cyber-glow transition rounded">
+                    LOAD SAMPLE SCAN
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// --- ANALYSIS RESULTS VIEW ---
+function ResultsPage({ image, result, onNewScan, onReport }) {
+  const [watermarkApplied, setWatermarkApplied] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [isScrubbing, setIsScrubbing] = useState(false);
+  const [metadataCleaned, setMetadataCleaned] = useState(false);
+  
+  const canvasRef = useRef(null);
+
+  const getRiskColor = (level) => {
+    switch(level) {
+      case 'Clear': return { text: 'text-cyber-emerald', bg: 'bg-cyber-emerald/10', border: 'border-cyber-emerald/30', glow: 'shadow-glow-cyan' };
+      case 'Medium': return { text: 'text-cyber-amber', bg: 'bg-cyber-amber/10', border: 'border-cyber-amber/30', glow: 'shadow-glow-purple' };
+      case 'High': return { text: 'text-cyber-rose', bg: 'bg-cyber-rose/10', border: 'border-cyber-rose/30', glow: 'shadow-glow-rose' };
+      case 'Critical': return { text: 'text-cyber-rose', bg: 'bg-cyber-rose/10', border: 'border-cyber-rose/30', glow: 'shadow-glow-rose' };
+      default: return { text: 'text-gray-400', bg: 'bg-gray-400/10', border: 'border-gray-400/30', glow: '' };
+    }
+  };
+
+  const riskColors = getRiskColor(result?.riskLevel);
+
+  const applySecureWatermark = () => {
+    setIsScrubbing(true);
+    
+    setTimeout(() => {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.src = image.src;
+      
+      img.onload = () => {
+        canvas.width = img.naturalWidth || 600;
+        canvas.height = img.naturalHeight || 600;
+        
+        ctx.drawImage(img, 0, 0);
+        
+        ctx.fillStyle = 'rgba(0, 240, 255, 0.08)';
+        ctx.fillRect(0, 0, canvas.width, 20);
+        ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
+        
+        ctx.font = 'bold 16px Space Grotesk, monospace';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.fillText(`HER_SHIELD_SECURE [ID:${result.fingerprint}]`, 20, 30);
+        
+        setWatermarkApplied(true);
+        setMetadataCleaned(true);
+        setIsScrubbing(false);
+      };
+    }, 1200);
+  };
+
+  const handleDownload = () => {
+    const canvas = canvasRef.current;
+    const link = document.createElement('a');
+    link.download = `Shielded_${image.name || 'avatar.jpg'}`;
+    link.href = canvas.toDataURL();
+    link.click();
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        {/* Left Column */}
+        <div className="lg:col-span-5 space-y-6">
+          <div className="glass-panel bg-cyber-card p-6 rounded-2xl border border-cyber-border">
+            <div className="relative rounded-xl overflow-hidden border border-cyber-border bg-black aspect-square">
+              <img src={image?.src} className="w-full h-full object-contain" alt="Analyzed Target" />
+              <canvas ref={canvasRef} className="hidden"></canvas>
+              {watermarkApplied && (
+                <div className="absolute inset-0 border-4 border-cyber-emerald/50 flex items-center justify-center pointer-events-none">
+                  <div className="px-4 py-2 bg-cyber-emerald text-black font-bold font-mono text-sm tracking-widest uppercase rotate-12 shadow-lg">
+                    SHIELD PROTECTED
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <div className="mt-4 flex justify-between items-center text-xs font-mono text-gray-500 border-t border-cyber-border/40 pt-4">
+              <span>Target: {image?.name || 'File_Payload.png'}</span>
+              <span>Size: ~140KB</span>
+            </div>
+          </div>
+
+          <div className="glass-panel bg-cyber-card p-6 rounded-2xl border border-cyber-border space-y-4">
+            <h4 className="font-mono text-sm font-bold text-white flex items-center gap-2">
+              <IconShield />
+              IDENTITY HARDENING SUITE
+            </h4>
+            <p className="text-xs text-gray-400">
+              Defend your likeness by stripping identifying EXIF markers and injecting anti-synthetic pixel blocks.
+            </p>
+
+            <div className="space-y-2.5 font-mono text-xs">
+              <div className="flex justify-between items-center py-2 border-b border-cyber-border/40">
+                <span className="text-gray-400">EXIF Camera Metadata</span>
+                {metadataCleaned ? (
+                  <span className="text-cyber-emerald flex items-center gap-1"><IconCheck /> STRIPPED</span>
+                ) : (
+                  <span className="text-cyber-rose">VULNERABLE (GPS/Device Logged)</span>
+                )}
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-cyber-border/40">
+                <span className="text-gray-400">Anti-GAN Noise Injection</span>
+                {watermarkApplied ? (
+                  <span className="text-cyber-emerald flex items-center gap-1"><IconCheck /> INJECTED</span>
+                ) : (
+                  <span className="text-cyber-amber">NOT ARMED</span>
+                )}
+              </div>
+            </div>
+
+            {isScrubbing ? (
+              <button className="w-full py-3 bg-cyber-purple/20 text-cyber-purple font-mono font-bold text-sm rounded-xl border border-cyber-purple/40 flex items-center justify-center gap-3 cursor-wait">
+                <svg className="animate-spin h-5 w-5 text-cyber-purple" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                ENCRYPTING PIXEL MATRIX...
+              </button>
+            ) : !watermarkApplied ? (
+              <button 
+                onClick={applySecureWatermark}
+                className="w-full py-3 bg-gradient-to-r from-cyber-glow to-cyber-purple text-black font-mono font-bold text-sm rounded-xl shadow-glow-cyan hover:opacity-90 transition">
+                ARM PROTECTION MATRIX
+              </button>
+            ) : (
+              <button 
+                onClick={handleDownload}
+                className="w-full py-3 bg-cyber-emerald text-black font-mono font-bold text-sm rounded-xl shadow-glow-cyan hover:opacity-90 transition flex items-center justify-center gap-2">
+                <IconDownload />
+                DOWNLOAD SHIELDED IMAGE
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="lg:col-span-7 space-y-6">
+          <div className="glass-panel bg-cyber-card p-8 rounded-2xl border border-cyber-border grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="flex flex-col items-center">
+              <div className="relative w-44 h-44 flex items-center justify-center">
+                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" stroke="rgba(255,255,255,0.05)" strokeWidth="6" fill="transparent" />
+                  <circle 
+                    cx="50" 
+                    cy="50" 
+                    r="40" 
+                    stroke={result.probability > 75 ? '#ff3366' : result.probability > 40 ? '#ff9f1c' : '#00f5d4'}
+                    strokeWidth="6" 
+                    fill="transparent" 
+                    strokeDasharray={251.2}
+                    strokeDashoffset={251.2 - (251.2 * result.probability) / 100}
+                    strokeLinecap="round"
+                    className="transition-all duration-1000 ease-out"
+                  />
+                </svg>
+                <div className="absolute flex flex-col items-center justify-center text-center">
+                  <span className="text-4xl font-extrabold font-mono text-white leading-none">{result.probability}%</span>
+                  <span className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mt-1">Deepfake Prob</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4 font-mono">
+              <div className="space-y-1">
+                <p className="text-xs text-gray-500 uppercase">Threat Level Classification</p>
+                <div className="flex items-center gap-2">
+                  <span className={`px-4 py-1.5 rounded text-sm font-bold border ${riskColors.bg} ${riskColors.text} ${riskColors.border} ${riskColors.glow}`}>
+                    {result.riskLevel.toUpperCase()}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="space-y-1 text-xs">
+                <p className="text-gray-500 uppercase">Detection Mesh Status</p>
+                <p className="text-white font-semibold flex items-center gap-1.5">
+                  {result.probability > 50 ? <IconAlert /> : <IconCheck />}
+                  {result.faceStatus}
+                </p>
+              </div>
+
+              <div className="space-y-1 text-xs">
+                <p className="text-gray-500 uppercase">Identity Fingerprint (SHA)</p>
+                <code className="text-cyber-glow font-bold text-xs">{result.fingerprint}</code>
+              </div>
+            </div>
+          </div>
+
+          <div className="glass-panel bg-cyber-card p-6 rounded-2xl border border-cyber-border space-y-4">
+            <h4 className="font-mono text-sm font-bold text-white uppercase tracking-wider">Digital Forensic Logs</h4>
+            
+            <div className="space-y-3">
+              {result.evidence.map((item) => (
+                <div key={item.id} className="p-4 rounded-xl bg-black/40 border border-cyber-border/40 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 hover:border-cyber-border transition">
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold text-white font-mono">{item.name}</p>
+                    <p className="text-xs text-gray-400">{item.detail}</p>
+                  </div>
+                  <span className={`px-2.5 py-1 rounded text-[10px] font-mono font-bold border ${
+                    item.status === 'Passed' 
+                      ? 'bg-cyber-emerald/10 text-cyber-emerald border-cyber-emerald/20' 
+                      : 'bg-cyber-rose/10 text-cyber-rose border-cyber-rose/20'
+                  }`}>
+                    {item.status.toUpperCase()}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <button 
+                onClick={() => setShowReportModal(true)}
+                className="flex-1 py-3 border border-cyber-rose/50 bg-cyber-rose/5 text-cyber-rose font-mono font-bold text-sm rounded-xl hover:bg-cyber-rose/15 transition flex items-center justify-center gap-2">
+                <IconAlert />
+                REPORT ABUSE CASE
+              </button>
+              <button 
+                onClick={onNewScan}
+                className="flex-1 py-3 glass-panel hover:bg-white/5 font-mono text-sm font-semibold text-white rounded-xl transition">
+                SCAN ANOTHER IMAGE
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {showReportModal && (
+        <ReportModal 
+          fingerprint={result.fingerprint} 
+          riskScore={result.probability} 
+          riskLevel={result.riskLevel}
+          onClose={() => setShowReportModal(false)}
+          onSubmit={(reportedCase) => {
+            onReport(reportedCase);
+            setShowReportModal(false);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+// --- REPORT CASE MODAL ---
+function ReportModal({ fingerprint, riskScore, riskLevel, onClose, onSubmit }) {
+  const [name, setName] = useState('');
+  const [platform, setPlatform] = useState('Instagram');
+  const [notes, setNotes] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+
+    const newCase = {
+      id: fingerprint,
+      name: name,
+      platform: platform,
+      date: new Date().toISOString().split('T')[0],
+      riskScore: riskScore,
+      riskLevel: riskLevel,
+      status: 'Case Registered',
+      summary: notes || 'No detailed case notes provided.'
+    };
+    onSubmit(newCase);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div className="w-full max-w-lg glass-panel bg-cyber-card p-6 rounded-2xl border border-cyber-border space-y-6 shadow-glow-rose">
+        <div className="flex justify-between items-center border-b border-cyber-border/40 pb-4">
+          <h3 className="text-xl font-bold font-mono text-cyber-rose flex items-center gap-2">
+            <IconAlert />
+            REGISTER ABUSE CASE
+          </h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-white font-mono">&times; CLOSE</button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4 font-mono text-sm">
+          <div className="space-y-1">
+            <label className="text-gray-400 block text-xs">CASE / INCIDENT DESCRIPTION</label>
+            <input 
+              type="text" 
+              required
+              placeholder="e.g. Unauthorized Face Clone on Profile"
+              value={name} 
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-2.5 rounded-lg glass-input text-white text-sm" 
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-gray-400 block text-xs">SOURCE PLATFORM</label>
+              <select 
+                value={platform}
+                onChange={(e) => setPlatform(e.target.value)}
+                className="w-full p-2.5 rounded-lg bg-cyber-bg border border-cyber-border text-white text-sm"
+              >
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Facebook">Facebook</option>
+                <option value="Twitter / X">Twitter / X</option>
+                <option value="Corporate Portal">Corporate Portal</option>
+                <option value="Other / Forum">Other / Forum</option>
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-gray-400 block text-xs">FINGERPRINT ID</label>
+              <input 
+                type="text" 
+                readOnly 
+                value={fingerprint} 
+                className="w-full p-2.5 rounded-lg bg-black/60 border border-cyber-border text-gray-400 text-sm cursor-not-allowed" 
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-gray-400 block text-xs">ADDITIONAL EVIDENCE NOTES</label>
+            <textarea 
+              rows="3" 
+              placeholder="Add platforms URLs, fake handle details or threat timeline details here..."
+              value={notes} 
+              onChange={(e) => setNotes(e.target.value)}
+              className="w-full p-2.5 rounded-lg glass-input text-white text-sm"
+            />
+          </div>
+
+          <div className="pt-4 flex gap-4">
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="flex-1 py-3 glass-panel text-white rounded-xl hover:bg-white/5 transition">
+              CANCEL
+            </button>
+            <button 
+              type="submit" 
+              className="flex-1 py-3 bg-cyber-rose text-black font-bold rounded-xl shadow-glow-rose hover:opacity-90 transition">
+              COMMIT REGISTER
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// --- DASHBOARD VIEW ---
+function DashboardPage({ cases, searchTerm, setSearchTerm, statusFilter, setStatusFilter }) {
+  const [activeTakedownCase, setActiveTakedownCase] = useState(null);
+
+  const filteredCases = cases.filter(item => {
+    const matchesSearch = 
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      item.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.platform.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = 
+      statusFilter === 'All' || 
+      (statusFilter === 'Critical' && item.riskScore >= 90) ||
+      (statusFilter === 'Warning' && item.riskScore < 90 && item.riskScore > 50) ||
+      (statusFilter === 'Clear' && item.riskScore <= 50);
+
+    return matchesSearch && matchesStatus;
+  });
+
+  const totalScans = cases.length;
+  const criticalCount = cases.filter(c => c.riskScore >= 90).length;
+  const warningCount = cases.filter(c => c.riskScore > 50 && c.riskScore < 90).length;
+  const activeTakedowns = cases.filter(c => c.status === 'Takedown Requested').length;
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      
+      {/* Dashboard Header Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 font-mono">
+        <div className="glass-panel bg-cyber-card p-6 rounded-2xl border border-cyber-border shadow-glow-cyan">
+          <span className="text-xs text-gray-500 uppercase tracking-widest block mb-2">TOTAL SCANS REGISTERED</span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold text-white">{totalScans}</span>
+            <span className="text-[10px] text-cyber-emerald">ACTIVE DATABASE</span>
+          </div>
+        </div>
+
+        <div className="glass-panel bg-cyber-card p-6 rounded-2xl border border-cyber-border shadow-glow-rose">
+          <span className="text-xs text-gray-500 uppercase tracking-widest block mb-2">CRITICAL THREATS</span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold text-cyber-rose">{criticalCount}</span>
+            <span className="text-[10px] text-cyber-rose">IMPERSONATION DETECTED</span>
+          </div>
+        </div>
+
+        <div className="glass-panel bg-cyber-card p-6 rounded-2xl border border-cyber-border shadow-glow-purple">
+          <span className="text-xs text-gray-500 uppercase tracking-widest block mb-2">SUSPICIOUS LEAKS</span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold text-cyber-amber">{warningCount}</span>
+            <span className="text-[10px] text-cyber-amber">WARNING ASSIGNED</span>
+          </div>
+        </div>
+
+        <div className="glass-panel bg-cyber-card p-6 rounded-2xl border border-cyber-border">
+          <span className="text-xs text-gray-500 uppercase tracking-widest block mb-2">TAKEDOWNS REGISTERED</span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold text-cyber-glow">{activeTakedowns}</span>
+            <span className="text-[10px] text-gray-400">DMCA PENDING</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Search & Filter Controls */}
+      <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 bg-cyber-card/30 p-4 rounded-xl border border-cyber-border">
+        <div className="relative flex-grow max-w-lg">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <IconSearch />
+          </div>
+          <input 
+            type="text" 
+            placeholder="Search incident reports, platform details, fingerprint IDs..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg glass-input text-sm text-white font-mono"
+          />
+        </div>
+
+        <div className="flex items-center gap-2 font-mono text-xs overflow-x-auto no-scrollbar">
+          <span className="text-gray-500 mr-2 uppercase">Risk:</span>
+          {['All', 'Critical', 'Warning', 'Clear'].map((filter) => (
+            <button
+              key={filter}
+              onClick={() => setStatusFilter(filter)}
+              className={`px-3 py-2 rounded-lg border font-bold transition ${
+                statusFilter === filter 
+                  ? 'bg-cyber-glow text-black border-cyber-glow' 
+                  : 'bg-cyber-bg border-cyber-border text-gray-400 hover:text-white'
+              }`}
+            >
+              {filter.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Cases Log Table */}
+      <div className="glass-panel bg-cyber-card rounded-2xl border border-cyber-border overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left font-mono border-collapse">
+            <thead>
+              <tr className="bg-black/50 text-[11px] text-gray-500 border-b border-cyber-border/40 uppercase tracking-wider">
+                <th className="py-4 px-6">Incident Details</th>
+                <th className="py-4 px-6">Platform</th>
+                <th className="py-4 px-6">Identified Date</th>
+                <th className="py-4 px-6 text-center">Threat Score</th>
+                <th className="py-4 px-6">Status Badge</th>
+                <th className="py-4 px-6 text-right">Legal Assitance</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-cyber-border/40 text-sm">
+              {filteredCases.length > 0 ? (
+                filteredCases.map((item) => (
+                  <tr key={item.id} className="hover:bg-white/[0.02] transition">
+                    <td className="py-4 px-6 max-w-sm">
+                      <div className="space-y-1">
+                        <span className="font-bold text-white block">{item.name}</span>
+                        <code className="text-[10px] text-cyber-purple font-mono block">ID: {item.id}</code>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className="px-2.5 py-1 rounded bg-black/40 border border-cyber-border/60 text-xs text-gray-300">
+                        {item.platform}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6 text-xs text-gray-400">
+                      {item.date}
+                    </td>
+                    <td className="py-4 px-6 text-center">
+                      <span className={`font-bold ${
+                        item.riskScore >= 90 ? 'text-cyber-rose' : item.riskScore > 50 ? 'text-cyber-amber' : 'text-cyber-emerald'
+                      }`}>
+                        {item.riskScore}%
+                      </span>
+                    </td>
+                    <td className="py-4 px-6 text-xs">
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold inline-flex items-center gap-1.5 ${
+                        item.status === 'Resolved' 
+                          ? 'bg-cyber-emerald/10 text-cyber-emerald border border-cyber-emerald/20' 
+                          : item.status === 'Takedown Requested'
+                          ? 'bg-cyber-rose/10 text-cyber-rose border border-cyber-rose/20'
+                          : 'bg-cyber-purple/10 text-cyber-purple border border-cyber-purple/20'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${
+                          item.status === 'Resolved' ? 'bg-cyber-emerald' : item.status === 'Takedown Requested' ? 'bg-cyber-rose' : 'bg-cyber-purple'
+                        }`}></span>
+                        {item.status.toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6 text-right">
+                      {item.riskScore > 50 ? (
+                        <button 
+                          onClick={() => setActiveTakedownCase(item)}
+                          className="px-3 py-1.5 text-xs rounded border border-cyber-rose/50 bg-cyber-rose/5 text-cyber-rose hover:bg-cyber-rose/15 transition font-bold">
+                          TAKEDOWN HELP
+                        </button>
+                      ) : (
+                        <span className="text-gray-600 text-xs italic">No Action Needed</span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="py-12 text-center text-gray-500 font-mono">
+                    No active security incidents match your filters.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {activeTakedownCase && (
+        <TakedownModal 
+          incident={activeTakedownCase}
+          onClose={() => setActiveTakedownCase(null)}
+        />
+      )}
+
+    </div>
+  );
+}
+
+// --- TAKEDOWN NOTICE ASSISTANT MODAL ---
+function TakedownModal({ incident, onClose }) {
+  const [copied, setCopied] = useState(false);
+  const dmcaTemplate = `SUBJECT: Urgent Takedown Request - Digital Likeness Infringement (HerShield ID: ${incident.id})
+
+DATE: ${new Date().toISOString().split('T')[0]}
+TO: Legal & Copyright Compliance Department (${incident.platform})
+
+To Whom It May Concern,
+
+I am writing to formally request the immediate removal/takedown of unauthorized synthetic material hosted on your platform. 
+
+REASON: This content contains a non-consensual AI-generated likeness (Deepfake) that violates my personal rights, digital integrity, and community guidelines.
+
+DETAILED IDENTIFICATION OF INFRINGEMENT:
+1. Incident Title: ${incident.name}
+2. Platform: ${incident.platform}
+3. Incident ID / Fingerprint: ${incident.id}
+4. Forensic Analysis Result: Deepfake Verification confirmed with ${incident.riskScore}% probability. Anomaly boundary flags detected synthetic GAN pixel artifacts.
+
+Pursuant to digital civil protections and likeness abuse legislation, I request that you remove the infringing accounts/posts associated with these elements immediately.
+
+I have a good faith belief that use of the material in the manner complained of is not authorized by the copyright/likeness owner. 
+
+Thank you for your prompt attention to this matter.
+
+Sincerely,
+[YOUR NAME]
+Contact Email: [YOUR EMAIL]`;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(dmcaTemplate);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div className="w-full max-w-2xl glass-panel bg-cyber-card p-6 rounded-2xl border border-cyber-border space-y-6 shadow-glow-rose">
+        <div className="flex justify-between items-center border-b border-cyber-border/40 pb-4">
+          <h3 className="text-xl font-bold font-mono text-cyber-rose flex items-center gap-2">
+            <IconAlert />
+            LEGAL TAKEDOWN ASSISTANT
+          </h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-white font-mono">&times; CLOSE</button>
+        </div>
+
+        <p className="text-xs text-gray-400 font-mono">
+          Below is a professional, legally-aligned digital likeness infringement notice pre-filled with the forensic validation details for this case. You can copy and send this to the target platform support portal.
+        </p>
+
+        <div className="relative">
+          <pre className="w-full h-80 bg-black/60 border border-cyber-border rounded-lg p-4 font-mono text-xs text-gray-300 overflow-y-auto no-scrollbar whitespace-pre-wrap">
+            {dmcaTemplate}
+          </pre>
+          <button 
+            onClick={handleCopy}
+            className="absolute top-3 right-3 p-2 rounded bg-cyber-bg border border-cyber-border hover:border-cyber-glow text-gray-400 hover:text-white transition flex items-center gap-1.5 font-mono text-[10px]">
+            <IconCopy />
+            {copied ? 'COPIED!' : 'COPY TO CLIPBOARD'}
+          </button>
+        </div>
+
+        <div className="flex justify-end gap-4 font-mono">
+          <button 
+            onClick={onClose}
+            className="px-6 py-2.5 glass-panel text-white rounded-xl hover:bg-white/5 transition text-sm">
+            DISMISS
+          </button>
+          <button 
+            onClick={handleCopy}
+            className="px-6 py-2.5 bg-cyber-rose text-black font-bold rounded-xl shadow-glow-rose hover:opacity-90 transition text-sm flex items-center gap-2">
+            <IconCopy />
+            COPY NOTICE
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Global render
+const container = document.getElementById('root');
+const root = ReactDOM.createRoot(container);
+root.render(<App />);
