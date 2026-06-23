@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import random
+from fastapi import UploadFile, File
+import hashlib
 
 app = FastAPI()
 
@@ -12,20 +14,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/analyze")
-def analyze():
-    probability = random.randint(20, 95)
+@app.post("/analyze")
+async def analyze(file: UploadFile = File(...)):
+
+    image_bytes = await file.read()
+
+    fingerprint = hashlib.sha256(image_bytes).hexdigest()
+
+    hash_int = int(fingerprint[:8], 16)
+    probability = hash_int % 100
 
     if probability > 75:
         level = "Critical"
     elif probability > 50:
-        level = "High"
+        level = "Warning"
     else:
-        level = "Medium"
+        level = "Safe"
 
     return {
         "probability": probability,
-        "riskLevel": level,
-        "faceStatus": "1 Face Detected",
-        "fingerprint": f"HS-DEMO-{random.randint(100,999)}"
+        "level": level,
+        "fingerprint": fingerprint
     }

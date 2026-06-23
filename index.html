@@ -395,14 +395,20 @@
                   setAnalysisResult(imageData.result);
                 } else {
                   // Generate randomized mock result for uploaded files
-                  fetch("http://127.0.0.1:8000/analyze")
+                  const formData = new FormData();
+formData.append("file", imageData.file);
+
+fetch("http://127.0.0.1:8000/analyze", {
+  method: "POST",
+  body: formData
+})
   .then(response => response.json())
   .then(data => {
     setAnalysisResult({
       probability: data.probability,
-      riskLevel: data.riskLevel,
-      faceStatus: data.faceStatus,
-      fingerprint: data.fingerprint,
+      riskLevel: data.level,
+      faceStatus: "Face Analysis Complete",
+      fingerprint: data.fingerprint.substring(0,16) + "...",
       evidence: [
         {
           id: 1,
@@ -414,7 +420,7 @@
           id: 2,
           name: 'Face Detection',
           status: 'Passed',
-          detail: data.faceStatus
+          detail: "Face Analysis Complete"
         }
       ]
     });
@@ -768,6 +774,7 @@
           onUpload({
             name: localFile.name,
             src: previewUrl,
+            file: localFile
             // result is null so it generates random scores
           });
         }
@@ -918,6 +925,7 @@
       const [showReportModal, setShowReportModal] = useState(false);
       const [isScrubbing, setIsScrubbing] = useState(false);
       const [metadataCleaned, setMetadataCleaned] = useState(false);
+      const [shieldId, setShieldId] = useState(null);
       
       const canvasRef = useRef(null);
       if (!result) {
@@ -968,9 +976,14 @@
             ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
             ctx.fillText(`HER_SHIELD_SECURE [ID:${result.fingerprint}]`, 20, 30);
             
-            setWatermarkApplied(true);
-            setMetadataCleaned(true);
-            setIsScrubbing(false);
+            const generatedShieldId =
+  "HS-2026-" +
+  result.fingerprint.substring(0, 6).toUpperCase();
+
+setShieldId(generatedShieldId);
+setWatermarkApplied(true);
+setMetadataCleaned(true);
+setIsScrubbing(false);
           };
         }, 1200);
       };
@@ -1043,6 +1056,17 @@
                   </div>
                 </div>
 
+                {shieldId && (
+  <div className="mt-4 p-3 rounded-lg border border-cyber-emerald/40 bg-cyber-emerald/5">
+    <p className="text-xs text-gray-400 font-mono">
+      SHIELD ID
+    </p>
+    <p className="text-cyber-emerald font-mono font-bold">
+      {shieldId}
+    </p>
+  </div>
+)}
+
                 {isScrubbing ? (
                   <button className="w-full py-3 bg-cyber-purple/20 text-cyber-purple font-mono font-bold text-sm rounded-xl border border-cyber-purple/40 flex items-center justify-center gap-3 cursor-wait">
                     <svg className="animate-spin h-5 w-5 text-cyber-purple" viewBox="0 0 24 24" fill="none">
@@ -1107,7 +1131,7 @@
                     <p className="text-xs text-gray-500 uppercase">Threat Level Classification</p>
                     <div className="flex items-center gap-2">
                       <span className={`px-4 py-1.5 rounded text-sm font-bold border ${riskColors.bg} ${riskColors.text} ${riskColors.border} ${riskColors.glow}`}>
-                        {result.riskLevel.toUpperCase()}
+                        {(result.riskLevel || "ERROR").toUpperCase()}
                       </span>
                     </div>
                   </div>
