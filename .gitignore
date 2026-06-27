@@ -206,3 +206,12 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 AI-Face-FairnessBench/
+dataset/
+.venv/
+__pycache__/
+*.pyc
+*.tar
+*.zip
+*.jpg
+*.png
+
